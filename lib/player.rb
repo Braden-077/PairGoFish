@@ -9,10 +9,19 @@ class Player
 
   def take_cards(cards)
     hand.push(cards).flatten!
+    cards
   end
 
   def check_for_card(rank)
     hand.any? {|card| card.same_rank?(rank)}
+  end
+
+  def hand_count
+    hand.count
+  end
+
+  def hand_empty?
+    hand.count == 0
   end
 
   def give_cards(rank)
