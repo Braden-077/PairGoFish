@@ -2,7 +2,7 @@
 
 require 'socket'
 
-class GoFishClient
+class Client
   attr_reader :socket, :output
 
   def initialize(port)

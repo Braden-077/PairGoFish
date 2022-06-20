@@ -22,9 +22,9 @@ describe Server do
 
   describe 'Server' do
     it 'accepts new sockets and creates a game' do
-      client1 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
       @server.accept_new_client
-      client2 = GoFishClient.new(@server.port_number)
+      client2 = Client.new(@server.port_number)
       @server.accept_new_client
       @server.create_game_if_possible
       expect(@server.games.count).to be 1
@@ -32,7 +32,7 @@ describe Server do
     end
 
     it 'sends a message from the server to the client when a successful connection has occured' do
-      client1 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
       @server.accept_new_client
       client1.read_from_server
       expect(@server.sockets.count).to be 1
@@ -40,7 +40,7 @@ describe Server do
     end
 
     it 'tests for capturing player input' do
-      client1 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
       @server.accept_new_client
       client1.read_from_server
       client1.send_to_server('What I give it')
@@ -49,7 +49,7 @@ describe Server do
     end
 
     it 'prompts a player for their name and associates it with the client' do
-      client1 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
       @server.accept_new_client
       client1.send_to_server('Braden')
       expect(client1.read_from_server.strip).to end_with 'Please enter your name:'
@@ -58,8 +58,8 @@ describe Server do
     end
 
     it 'allows for the second user to input their name and still be refered to by name' do
-      client1 = GoFishClient.new(@server.port_number)
-      client2 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
+      client2 = Client.new(@server.port_number)
       @server.accept_new_client
       client2.send_to_server('Caleb')
       @server.accept_new_client
@@ -71,8 +71,8 @@ describe Server do
     end
 
     it 'allows for the second user to input their name and still be refered to by name' do
-      client1 = GoFishClient.new(@server.port_number)
-      client2 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
+      client2 = Client.new(@server.port_number)
       @server.accept_new_client
       client2.send_to_server('Caleb')
       @server.accept_new_client
@@ -84,8 +84,8 @@ describe Server do
     end
 
     it 'takes the provided names and creates a game using them' do
-      client1 = GoFishClient.new(@server.port_number)
-      client2 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
+      client2 = Client.new(@server.port_number)
       @server.accept_new_client
       client2.send_to_server('Caleb')
       @server.accept_new_client

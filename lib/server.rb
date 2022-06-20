@@ -31,7 +31,7 @@ class Server
 
   def create_game_if_possible
     if sockets.count == 2
-      game = GameManager.new(@server, sockets, player_names)
+      game = GameManager.new
       games.push(game)
       game
     end

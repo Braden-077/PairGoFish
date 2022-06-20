@@ -3,7 +3,7 @@
 require 'client'
 require 'server'
 
-describe GoFishClient do
+describe Client do
   before(:each) do
     @sockets = []
     @server = Server.new
@@ -19,7 +19,7 @@ describe GoFishClient do
 
   describe '#read_from_server' do
     it 'reads messages from the server to the client' do
-      client1 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
       @server.accept_new_client
       message = client1.read_from_server
       expect(message).to include('Please enter your name:')
@@ -28,7 +28,7 @@ describe GoFishClient do
 
   describe '#requires_input?' do
     it 'returns true when a message includes a colon' do
-      client1 = GoFishClient.new(@server.port_number)
+      client1 = Client.new(@server.port_number)
       @server.accept_new_client
       message = client1.read_from_server
       expect(client1.requires_input?(message)).to be true
