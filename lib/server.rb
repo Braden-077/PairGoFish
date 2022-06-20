@@ -5,11 +5,11 @@ require 'socket'
 require 'pry'
 
 class Server
-  attr_accessor :sockets, :games, :player_names
+  attr_accessor :sockets, :game_managers, :player_names
 
   def initialize
     @sockets = []
-    @games = []
+    @game_managers = []
     @player_names = []
   end
 
@@ -29,11 +29,12 @@ class Server
     socket.puts 'Please enter your name:'
   end
 
-  def create_game_if_possible
+  def create_game_manager_if_possible
     if sockets.count == 2
-      game = GameManager.new
-      games.push(game)
-      game
+      game_manager = GameManager.new(sockets: sockets, names: player_names)
+      game_managers.push(game_manager)
+      sockets.clear
+      game_manager
     end
   end
 

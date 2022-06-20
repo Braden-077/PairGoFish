@@ -12,7 +12,7 @@ class Player
     cards
   end
 
-  def check_for_card(rank)
+  def has_rank?(rank)
     hand.any? {|card| card.same_rank?(rank)}
   end
 
@@ -21,7 +21,7 @@ class Player
   end
 
   def hand_empty?
-    hand.count == 0
+    hand.empty?
   end
 
   def give_cards(rank)
@@ -30,11 +30,13 @@ class Player
     cards_to_give
   end
 
-  def check_for_books(rank)
-    cards_to_check = hand.filter {|card| card.same_rank?(rank)}
-    if cards_to_check.length == 4
-      hand.delete_if {|card| cards_to_check.count == 4 }
-      books.push(cards_to_check.first.rank)
+  def check_for_books
+    card_ranks = hand.map {|card| card.rank}
+    Card::RANKS.each do |rank| 
+      if card_ranks.count {|card_rank| rank == card_rank} == 4
+        hand.delete_if {|card| card.rank == rank}
+        books.push(rank)
+      end
     end
   end
 

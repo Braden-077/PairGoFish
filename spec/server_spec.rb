@@ -20,15 +20,14 @@ describe Server do
     end
   end
 
-  describe 'Server' do
     it 'accepts new sockets and creates a game' do
       client1 = Client.new(@server.port_number)
       @server.accept_new_client
       client2 = Client.new(@server.port_number)
       @server.accept_new_client
-      @server.create_game_if_possible
-      expect(@server.games.count).to be 1
-      expect(@server.sockets.count).to be 0
+      @server.create_game_manager_if_possible
+      expect(@server.game_managers.count).to be 1
+      expect(@server.sockets.count).to be_zero
     end
 
     it 'sends a message from the server to the client when a successful connection has occured' do
@@ -92,13 +91,14 @@ describe Server do
       client1.send_to_server('Braden')
       @server.get_player_name
       @server.get_player_name
-      @server.create_game_if_possible
-      expect(@server.games.first.game.players.count).to eq 2
-      expect(@server.games.first.game.players.first.name).to eq 'Braden'
-      expect(@server.games.first.game.players.last.name).to eq 'Caleb'
+      manager = @server.create_game_manager_if_possible
+      expect(manager.game.players.count).to eq 2
+      expect(manager.game.players.first.name).to eq 'Braden'
+      expect(manager.game.players.last.name).to eq 'Caleb'
     end
-  end
 
+  # TODO: Add describes
+  
   # Add more tests to make sure the game is being played
   # Unique connection messages
   # For example:

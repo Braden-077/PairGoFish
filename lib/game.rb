@@ -26,22 +26,19 @@ class Game
     end
   end
 
-    def play_round(rank, asked_player)
+    def play_round(rank, asked_player_name)
       return unless turn_player
-      player_asked = get_player(asked_player)
-      ask_for_card(rank, player_asked)
+      player_asked = get_player(asked_player_name)
+      if turn_player.has_rank?(rank) && player_asked.has_rank?(rank)
+        turn_player.take_cards(player_asked.give_cards(rank)) 
+      elsif !player_asked.has_rank?(rank)
+        up_round if go_fish(turn_player) != rank
+      end
+      turn_player.check_for_books
     end
 
     def up_round
       @round_count += 1
-    end
-
-    def ask_for_card(rank, player_asked)
-      if turn_player.check_for_card(rank) && player_asked.check_for_card(rank)
-        turn_player.take_cards(player_asked.give_cards(rank))
-      elsif !player_asked.check_for_card(rank)
-        up_round if go_fish(turn_player) != rank
-      end
     end
 
     def turn_player

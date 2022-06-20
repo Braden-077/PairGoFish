@@ -12,31 +12,29 @@ describe 'Game' do
     end
 
     it 'initializes with given paramaters' do
-      player = player('Josh')
-      game = Game.new(players: [player], deck: Deck.new([card('A', 'S')]), started_status: true)
+      player = Player.new(name: 'Josh')
+      game = Game.new(players: [player], deck: Deck.new([Card.new('A', 'S')]), started_status: true)
       expect(game.players).to eq [player]
-      expect(game.deck.cards).to eq [card('A', 'S')]
+      expect(game.deck.cards).to eq [Card.new('A', 'S')]
       expect(game.started_status).to be true
     end
   end
 
   describe '#start' do
     it 'deals cards' do
-      player1 = player('Josh')
-      player2 = player('Will')
-      player3 = player('Braden')
+      player1 = Player.new(name: 'Josh')
+      player2 = Player.new(name: 'Will')
+      player3 = Player.new(name: 'Braden')
       game = Game.new(players: [player1, player2, player3], started_status: false)
       hand_count = game.determined_card_num
       game.start
-      expect(player1.hand.count).to eq hand_count
-      expect(player2.hand.count).to eq hand_count
-      expect(player3.hand.count).to eq hand_count
+      game.players.each {|player| expect(player.hand_count).to eq hand_count}
       expect(game.deck.cards_left).to eq Deck.new.cards_left - hand_count * game.players.count
       expect(game.started_status).to be true
     end
 
     it 'deals 5 cards to 4 or more players' do
-      players = [player('Josh'), player('Will'), player('Braden'), player('Caleb')]
+      players = [Player.new(name: 'Josh'), Player.new(name: 'Will'), Player.new(name: 'Braden'), Player.new(name: 'Caleb')]
       game = Game.new(players: players, started_status: false)
       hand_count = game.determined_card_num
       game.start
@@ -47,31 +45,32 @@ describe 'Game' do
       expect(game.started_status).to be true
     end
   end
+  
   describe '#play_round' do
     it 'has player ask for a card and receive it' do
-      players = [Player.new(name: 'Braden', hand: [card('A', 'H')]), Player.new(name: 'Josh', hand: [card('A', 'S')])]
+      players = [Player.new(name: 'Braden', hand: [Card.new('A', 'H')]), Player.new(name: 'Josh', hand: [Card.new('A', 'S')])]
       game = Game.new(players: players, started_status: true)
       game.play_round('A', 'Josh')
-      expect(players[0].hand).to eq [card('A', 'H'), card('A', 'S')]
+      expect(players[0].hand).to eq [Card.new('A', 'H'), Card.new('A', 'S')]
       expect(players[1].hand).to be_empty
       expect(game.round_count).to eq 1
     end
 
     it 'has player ask for a card and doesn\'t receive it, and receives the correct rank from the deck' do
-      players = [Player.new(name: 'Braden', hand: [card('A', 'H')]), Player.new(name: 'Josh', hand: [card('2', 'S')])]
-      game = Game.new(players: players, started_status: true, deck: Deck.new([card('A', 'C')]))
+      players = [Player.new(name: 'Braden', hand: [Card.new('A', 'H')]), Player.new(name: 'Josh', hand: [Card.new('2', 'S')])]
+      game = Game.new(players: players, started_status: true, deck: Deck.new([Card.new('A', 'C')]))
       game.play_round('A', 'Josh')
-      expect(players[0].hand).to eq [card('A', 'H'), card('A', 'C')]
-      expect(players[1].hand).to eq [card('2', 'S')]
+      expect(players[0].hand).to eq [Card.new('A', 'H'), Card.new('A', 'C')]
+      expect(players[1].hand).to eq [Card.new('2', 'S')]
       expect(game.round_count).to eq 1
     end
 
     it 'has player ask for a card and doesn\'t receive it, and doesn\'t receive the correct rank from the deck' do
-      players = [Player.new(name: 'Braden', hand: [card('A', 'H')]), Player.new(name: 'Josh', hand: [card('2', 'S')])]
-      game = Game.new(players: players, started_status: true, deck: Deck.new([card('3', 'C')]))
+      players = [Player.new(name: 'Braden', hand: [Card.new('A', 'H')]), Player.new(name: 'Josh', hand: [Card.new('2', 'S')])]
+      game = Game.new(players: players, started_status: true, deck: Deck.new([Card.new('3', 'C')]))
       game.play_round('A', 'Josh')
-      expect(players[0].hand).to eq [card('A', 'H'), card('3', 'C')]
-      expect(players[1].hand).to eq [card('2', 'S')]
+      expect(players[0].hand).to eq [Card.new('A', 'H'), Card.new('3', 'C')]
+      expect(players[1].hand).to eq [Card.new('2', 'S')]
       expect(game.round_count).to eq 2
     end
 
@@ -85,11 +84,11 @@ describe 'Game' do
       expect(players[0].hand).to be_empty
       game.check_emptiness
       expect(players[0].hand_count).to eq 1
-      expect(players[0].hand).to eq [card('2', 'C')]
+      expect(players[0].hand).to eq [Card.new('2', 'C')]
     end
 
     it 'ups the round if the turn_player\'s hand and the deck are empty' do
-      players = [Player.new(name: 'Braden'), Player.new(name: 'Josh', hand: [card('A', 'S')])]
+      players = [Player.new(name: 'Braden'), Player.new(name: 'Josh', hand: [Card.new('A', 'S')])]
       game = Game.new(players: players, started_status: true, deck: Deck.new([]))
       game.check_emptiness
       expect(players[0].hand).to be_empty
@@ -109,7 +108,7 @@ describe 'Game' do
 
   describe '#turn_player' do
     it 'returns the proper turn player' do
-      game = Game.new(players: [player('Josh'), player('Braden')], started_status: true)
+      game = Game.new(players: [Player.new(name: 'Josh'), Player.new(name: 'Braden')], started_status: true)
       expect(game.turn_player.name).to eq 'Josh'
       game.up_round
       expect(game.turn_player.name).to eq 'Braden'
@@ -123,13 +122,5 @@ describe 'Game' do
       game.go_fish(game.turn_player)
       expect(game.players[0].hand_count).to eq 1
     end
-  end
-
-  def card(rank, suit)
-    Card.new(rank, suit)
-  end
-
-  def player(name, hand = [], books = [])
-    Player.new(name: name, hand: hand, books: books)
   end
 end

@@ -10,11 +10,12 @@ while true do
   begin
     server.accept_new_client
     server.get_player_name
-    server.create_game_if_possible
-    if server.games.count == 1
-      server.games[0].run_game
+    server.create_game_manager_if_possible
+    if server.game_managers.count == 1
+      server.game_managers.first.run_game
     end
   rescue
     server.stop
+    break
   end
 end
