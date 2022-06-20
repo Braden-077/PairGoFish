@@ -40,9 +40,9 @@ describe 'Game' do
       game = Game.new(players: players, started_status: false)
       hand_count = game.determined_card_num
       game.start
-      expect(player1.hand.count).to eq hand_count
-      expect(player2.hand.count).to eq hand_count
-      expect(player3.hand.count).to eq hand_count
+      expect(players[0].hand.count).to eq hand_count
+      expect(players[1].hand.count).to eq hand_count
+      expect(players[2].hand.count).to eq hand_count
       expect(game.deck.cards_left).to eq Deck.new.cards_left - hand_count * game.players.count
       expect(game.started_status).to be true
     end
@@ -118,9 +118,10 @@ describe 'Game' do
 
   describe '#go_fish' do
     it 'has a player draw a card from the deck when told to go fish' do
-      game = Game.new(players: [Player.new('Braden')], started_status: true)
+      game = Game.new(players: [Player.new(name: 'Braden')], started_status: true)
       expect(game.players[0].hand).to be_empty
-      expect
+      game.go_fish(game.turn_player)
+      expect(game.players[0].hand_count).to eq 1
     end
   end
 
