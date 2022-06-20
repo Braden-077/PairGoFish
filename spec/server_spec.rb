@@ -28,6 +28,7 @@ describe Server do
       @server.accept_new_client
       @server.create_game_if_possible
       expect(@server.games.count).to be 1
+      expect(@server.sockets.count).to be 0
     end
 
     it 'sends a message from the server to the client when a successful connection has occured' do
