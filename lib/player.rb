@@ -9,6 +9,7 @@ class Player
 
   def take_cards(cards)
     hand.push(cards).flatten!
+    check_for_books
     cards
   end
 

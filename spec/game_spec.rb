@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'game'
+require 'deck'
+require 'player'
 
 describe 'Game' do
   describe '#initialize' do
@@ -45,12 +47,12 @@ describe 'Game' do
       expect(game.started_status).to be true
     end
   end
-  
+
   describe '#play_round' do
     it 'has player ask for a card and receive it' do
       players = [Player.new(name: 'Braden', hand: [Card.new('A', 'H')]), Player.new(name: 'Josh', hand: [Card.new('A', 'S')])]
       game = Game.new(players: players, started_status: true)
-      game.play_round('A', 'Josh')
+      game.play_round('A', game.get_player('Josh'))
       expect(players[0].hand).to eq [Card.new('A', 'H'), Card.new('A', 'S')]
       expect(players[1].hand).to be_empty
       expect(game.round_count).to eq 1
@@ -59,7 +61,7 @@ describe 'Game' do
     it 'has player ask for a card and doesn\'t receive it, and receives the correct rank from the deck' do
       players = [Player.new(name: 'Braden', hand: [Card.new('A', 'H')]), Player.new(name: 'Josh', hand: [Card.new('2', 'S')])]
       game = Game.new(players: players, started_status: true, deck: Deck.new([Card.new('A', 'C')]))
-      game.play_round('A', 'Josh')
+      game.play_round('A', game.get_player('Josh'))
       expect(players[0].hand).to eq [Card.new('A', 'H'), Card.new('A', 'C')]
       expect(players[1].hand).to eq [Card.new('2', 'S')]
       expect(game.round_count).to eq 1
@@ -68,7 +70,7 @@ describe 'Game' do
     it 'has player ask for a card and doesn\'t receive it, and doesn\'t receive the correct rank from the deck' do
       players = [Player.new(name: 'Braden', hand: [Card.new('A', 'H')]), Player.new(name: 'Josh', hand: [Card.new('2', 'S')])]
       game = Game.new(players: players, started_status: true, deck: Deck.new([Card.new('3', 'C')]))
-      game.play_round('A', 'Josh')
+      game.play_round('A', game.get_player('Josh'))
       expect(players[0].hand).to eq [Card.new('A', 'H'), Card.new('3', 'C')]
       expect(players[1].hand).to eq [Card.new('2', 'S')]
       expect(game.round_count).to eq 2
@@ -121,6 +123,13 @@ describe 'Game' do
       expect(game.players[0].hand).to be_empty
       game.go_fish(game.turn_player)
       expect(game.players[0].hand_count).to eq 1
+    end
+  end
+
+  describe '#over?' do
+    it 'returns false when all 13 books have been collected' do
+      game = Game.new(players: [Player.new(name: 'Josh', books: %w(2 3 4 5 6 7 8 9 10)), Player.new(name: 'Braden', books: %w(J Q K A))])
+      expect(game.over?).to be true
     end
   end
 end

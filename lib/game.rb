@@ -1,7 +1,7 @@
 # frozen_string_literal: true 
-
 class Game
   attr_accessor :players, :deck, :started_status, :round_count, :turn_player, :books
+  TOTAL_BOOKS = 13
   def initialize(players: [], deck: Deck.new, started_status: false)
     @players = players 
     @deck = deck
@@ -26,19 +26,21 @@ class Game
     end
   end
 
-    def play_round(rank, asked_player_name)
+    def play_round(rank, player_asked)
       return unless turn_player
-      player_asked = get_player(asked_player_name)
+      handle_cards(rank, player_asked)
+    end
+
+    def up_round
+      @round_count += 1
+    end
+
+    def handle_cards(rank, player_asked)
       if turn_player.has_rank?(rank) && player_asked.has_rank?(rank)
         turn_player.take_cards(player_asked.give_cards(rank)) 
       elsif !player_asked.has_rank?(rank)
         up_round if go_fish(turn_player) != rank
       end
-      turn_player.check_for_books
-    end
-
-    def up_round
-      @round_count += 1
     end
 
     def turn_player
@@ -54,6 +56,10 @@ class Game
 
     def get_player(name)
       players.find {|player| player.name == name}
+    end
+
+    def over?
+      players.sum {|player| player.books.length} == TOTAL_BOOKS
     end
 
     def check_emptiness
